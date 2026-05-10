@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "latest",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
@@ -58,6 +59,7 @@
     "dotenv": "^17.4.2",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "playwright": "^1.59.1",
     "tailwindcss": "^4",
     "typescript": "latest",
     "vitest": "^4.1.4"

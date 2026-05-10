@@ -51,9 +51,9 @@ Report: "Evaluation complete. The symptom does not qualify as a template observa
 ### Step 3: Prerequisites
 
 ```bash
-TEMPLATE_REPO="magpiexyz-lab/mvp-template"
+TEMPLATE_REPO="deepakpalrocks/Silicon-Coliseum"
 if ! git remote get-url template &>/dev/null; then
-  git remote add template https://github.com/magpiexyz-lab/mvp-template.git
+  git remote add template https://github.com/deepakpalrocks/Silicon-Coliseum.git
 fi
 ```
 
@@ -74,7 +74,7 @@ Before composing the issue, strip all project-specific information:
 ### Step 5: Dedup (observe.md rules)
 
 ```bash
-TEMPLATE_REPO="magpiexyz-lab/mvp-template"
+TEMPLATE_REPO="deepakpalrocks/Silicon-Coliseum"
 BASENAME=$(basename "<template-file>")
 gh issue list --repo $TEMPLATE_REPO --label observation \
   --search "[observe] $BASENAME:" --state open --limit 20
@@ -135,7 +135,7 @@ FILE_VERSION=$(git hash-object "<template-file>" 2>/dev/null || echo "unknown")
 
 File the issue:
 ```bash
-TEMPLATE_REPO="magpiexyz-lab/mvp-template"
+TEMPLATE_REPO="deepakpalrocks/Silicon-Coliseum"
 gh issue create --repo $TEMPLATE_REPO \
   --title "<title>" \
   --label "observation" \

@@ -23,9 +23,9 @@ which handles observation inline without calling this procedure directly.
 
 1. Resolve the template repo (where observations should be filed):
    ```bash
-   TEMPLATE_REPO="magpiexyz-lab/mvp-template"
+   TEMPLATE_REPO="deepakpalrocks/Silicon-Coliseum"
    if ! git remote get-url template &>/dev/null; then
-     git remote add template https://github.com/magpiexyz-lab/mvp-template.git
+     git remote add template https://github.com/deepakpalrocks/Silicon-Coliseum.git
    fi
    ```
    The template remote is auto-added if missing.

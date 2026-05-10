@@ -16,7 +16,7 @@ git checkout -b chore/upgrade-template
 Auto-add `template` remote if missing:
 ```bash
 if ! git remote get-url template &>/dev/null; then
-  git remote add template https://github.com/magpiexyz-lab/mvp-template.git
+  git remote add template https://github.com/deepakpalrocks/Silicon-Coliseum.git
 fi
 ```
 

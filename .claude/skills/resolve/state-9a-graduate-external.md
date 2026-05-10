@@ -28,7 +28,7 @@ If `.claude/stacks/external/<service-slug>.md` already exists:
 ### 3. Count observations (dual search)
 
 ```bash
-TEMPLATE_REPO="magpiexyz-lab/mvp-template"
+TEMPLATE_REPO="deepakpalrocks/Silicon-Coliseum"
 
 # Search 1: pattern-classifier issues
 gh issue list --repo $TEMPLATE_REPO --label observation \

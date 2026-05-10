@@ -1,4 +1,4 @@
-# CLAUDE.md — Experiment Template Rules (v1.0)
+# CLAUDE.md — Silicon Coliseum Rules (v1.0)
 
 Read `experiment/experiment.yaml` before every task. It is the single source of truth for what to build.
 

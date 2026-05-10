@@ -53,7 +53,7 @@ If no fixes qualify -> return `"No template observations"` and stop.
 
 ### 1. Prerequisites
 
-1. Set the template repo: `TEMPLATE_REPO="magpiexyz-lab/mvp-template"`. Auto-add remote if missing: `if ! git remote get-url template &>/dev/null; then git remote add template https://github.com/magpiexyz-lab/mvp-template.git; fi`.
+1. Set the template repo: `TEMPLATE_REPO="deepakpalrocks/Silicon-Coliseum"`. Auto-add remote if missing: `if ! git remote get-url template &>/dev/null; then git remote add template https://github.com/deepakpalrocks/Silicon-Coliseum.git; fi`.
 2. `gh auth status` — if fails -> return "No template observations".
 3. `gh repo view $TEMPLATE_REPO --json name` — if fails -> return "No template observations".
 
