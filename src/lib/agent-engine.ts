@@ -17,9 +17,9 @@ import { getCelebrityPrompt } from "./celebrity-agents";
  * Celebrity agents get personality-driven decisions!
  */
 
-const cerebras = new OpenAI({
-  baseURL: "https://api.cerebras.ai/v1",
-  apiKey: process.env.CEREBRAS_API_KEY || "",
+const llmClient = new OpenAI({
+  baseURL: process.env.TRADE_API_BASE || "https://api.groq.com/openai/v1",
+  apiKey: process.env.TRADE_API_KEY || process.env.GROK_API_KEY || "",
 });
 
 const RISK_PROFILES: Record<Agent["riskLevel"], string> = {
@@ -139,8 +139,8 @@ Respond ONLY with this JSON format (no markdown, no explanation):
   }
 }`;
 
-    const response = await cerebras.chat.completions.create({
-      model: process.env.TRADE_MODEL || "llama3.1-8b",
+    const response = await llmClient.chat.completions.create({
+      model: process.env.TRADE_MODEL || "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 4000,
       messages: [
@@ -254,7 +254,7 @@ export async function evaluateAgent(
       ? `${celebrityPrompt}\n\nYou are competing in the Silicon Coliseum trading arena. You make trading decisions by swapping Silicon tokens (sBTC, sETH, sGOLD, sSILVER, sOIL, sWHEAT) via AMM pools. These track real-world prices! Respond ONLY with valid JSON. Stay in character in your reasoning!`
       : `You are an AI trading agent named "${agent.name}" competing in a virtual trading arena. You make trading decisions by swapping tokens via AMM pools. Respond ONLY with valid JSON.`;
 
-    const response = await cerebras.chat.completions.create({
+    const response = await llmClient.chat.completions.create({
       model: "llama3.1-8b",
       temperature: 0.7,
       max_tokens: 1500,
@@ -448,7 +448,7 @@ ${poolsText}
 
 Respond with JSON: { "should_trade": boolean, "reasoning": string, "market_analysis": string, "actions": [{ "pool_id": string, "token_in": string, "token_out": string, "amount_in": number, "reason": string }] }`;
 
-    const response = await cerebras.chat.completions.create({
+    const response = await llmClient.chat.completions.create({
       model: "llama3.1-8b",
       temperature: 0.7,
       max_tokens: 1500,
