@@ -402,7 +402,7 @@ export default function ArenasPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-8 -mt-4">
+      <div className="max-w-7xl mx-auto px-4 pb-8 -mt-4 relative z-10">
 
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm text-center">

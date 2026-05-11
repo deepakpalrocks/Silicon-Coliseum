@@ -6,7 +6,15 @@ import { evaluateAllAgents } from "@/lib/agent-engine";
 import { executeBuy, executeSell } from "@/lib/trade-executor";
 import type { Pool, Agent, ArenaTrade } from "@/lib/types";
 
+export async function GET(request: NextRequest) {
+  return handleCron(request);
+}
+
 export async function POST(request: NextRequest) {
+  return handleCron(request);
+}
+
+async function handleCron(request: NextRequest) {
   try {
     // Verify authorization: CRON_SECRET or admin user
     const cronSecret = request.headers.get("x-cron-secret") ||
