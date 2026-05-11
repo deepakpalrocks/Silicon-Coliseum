@@ -165,7 +165,11 @@ Respond ONLY with this JSON format (no markdown, no explanation):
       const agentDecision = decisions[name];
       if (agentDecision) {
         try {
-          const validated = AIDecisionSchema.parse(agentDecision);
+          // Handle both formats: { actions: [...] } or just [...]
+          const normalized = Array.isArray(agentDecision)
+            ? { actions: agentDecision }
+            : agentDecision;
+          const validated = AIDecisionSchema.parse(normalized);
           results.set(name, validated);
         } catch {
           // Invalid format for this agent, skip
