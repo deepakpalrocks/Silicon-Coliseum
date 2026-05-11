@@ -238,8 +238,8 @@ export async function resolveSolBets(
   arenaId: string,
   topAgentIds: string[]
 ): Promise<{
-  performerRewards: { userId: string; walletAddress: string; amount: number }[];
-  bettorRewards: { userId: string; walletAddress: string; amount: number }[];
+  performerRewards: { userId: string; walletAddress: string; amount: number; rewardId?: string }[];
+  bettorRewards: { userId: string; walletAddress: string; amount: number; rewardId?: string }[];
   feeAmount: number;
 }> {
   const top3Ids = new Set(topAgentIds.slice(0, 3));
@@ -272,7 +272,7 @@ export async function resolveSolBets(
   const performerDistribution = [0.5, 0.25, 0.2];
   const feeRate = 0.05;
   let feeAmount = Math.floor(performerPool * feeRate);
-  const performerRewards: { userId: string; walletAddress: string; amount: number }[] = [];
+  const performerRewards: { userId: string; walletAddress: string; amount: number; rewardId?: string }[] = [];
 
   // Get treasury address for unclaimed performer shares
   const treasuryAddress = process.env.NEXT_PUBLIC_TREASURY_WALLET || "";
@@ -307,18 +307,19 @@ export async function resolveSolBets(
       continue;
     }
 
-    performerRewards.push({
-      userId: agent.user_id,
-      walletAddress,
-      amount: share,
-    });
-
-    await supabase.from("sol_rewards").insert({
+    const { data: insertedReward } = await supabase.from("sol_rewards").insert({
       arena_id: arenaId,
       user_id: agent.user_id,
       wallet_address: walletAddress,
       reward_type: "performer",
       sol_amount: share,
+    }).select("id").single();
+
+    performerRewards.push({
+      userId: agent.user_id,
+      walletAddress,
+      amount: share,
+      rewardId: insertedReward?.id,
     });
   }
 
@@ -327,7 +328,7 @@ export async function resolveSolBets(
     (sum, b) => sum + (b.sol_amount || 0),
     0
   );
-  const bettorRewards: { userId: string; walletAddress: string; amount: number }[] = [];
+  const bettorRewards: { userId: string; walletAddress: string; amount: number; rewardId?: string }[] = [];
 
   for (const bet of winningBets) {
     const proportion =
@@ -344,18 +345,19 @@ export async function resolveSolBets(
       .eq("id", bet.id);
 
     if (bet.wallet_address && payout > 0) {
-      bettorRewards.push({
-        userId: bet.user_id,
-        walletAddress: bet.wallet_address,
-        amount: payout,
-      });
-
-      await supabase.from("sol_rewards").insert({
+      const { data: insertedReward } = await supabase.from("sol_rewards").insert({
         arena_id: arenaId,
         user_id: bet.user_id,
         wallet_address: bet.wallet_address,
         reward_type: "bettor",
         sol_amount: payout,
+      }).select("id").single();
+
+      bettorRewards.push({
+        userId: bet.user_id,
+        walletAddress: bet.wallet_address,
+        amount: payout,
+        rewardId: insertedReward?.id,
       });
     }
   }
