@@ -140,7 +140,7 @@ Respond ONLY with this JSON format (no markdown, no explanation):
 }`;
 
     const response = await cerebras.chat.completions.create({
-      model: "llama-4-scout-17b-16e-instruct",
+      model: process.env.TRADE_MODEL || "llama3.1-8b",
       temperature: 0.7,
       max_tokens: 4000,
       messages: [
