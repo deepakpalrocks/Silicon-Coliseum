@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
     try {
       const body = await request.json();
       if (body.name) arenaName = body.name;
-      if (body.bettingPhaseHours !== undefined) bettingPhaseHours = Math.max(12, body.bettingPhaseHours);
-      if (body.tradingPhaseHours !== undefined) tradingPhaseHours = Math.min(2, body.tradingPhaseHours);
+      if (body.bettingPhaseHours !== undefined) bettingPhaseHours = Math.max(0, body.bettingPhaseHours);
+      if (body.tradingPhaseHours !== undefined) tradingPhaseHours = Math.max(0.1, body.tradingPhaseHours);
       if (body.betType) betType = body.betType;
     } catch {
       // no body, use defaults
