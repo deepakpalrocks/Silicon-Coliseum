@@ -6,11 +6,12 @@ import { CELEBRITY_AGENTS } from "@/lib/celebrity-agents";
 /**
  * POST /api/cron/generate-comments
  *
- * Generates a batch of 120 in-character comments from celebrity agents
- * for each active arena. Comments are spaced 30 seconds apart so the
- * conversation unfolds over the next 60 minutes.
+ * Generates a batch of 90 in-character comments from celebrity agents
+ * for each active arena in trading phase. Comments are spaced 10 seconds
+ * apart so the conversation unfolds over the next 15 minutes.
  *
- * Called every 1 hour by Vercel cron. Uses Groq for generation.
+ * Called every 15 minutes by Vercel cron. Uses Groq for generation.
+ * Skips arenas still in betting phase.
  */
 
 const grok = new OpenAI({
@@ -62,15 +63,21 @@ async function handleCron(request: NextRequest) {
 
     const supabase = createServiceClient();
 
-    // Fetch all active arenas
-    const { data: arenas } = await supabase
+    // Fetch all active arenas that are past the betting phase (trading phase only)
+    const { data: allArenas } = await supabase
       .from("arenas")
-      .select("id, name")
+      .select("id, name, betting_phase_end")
       .eq("status", "active");
 
-    if (!arenas || arenas.length === 0) {
+    const now = new Date();
+    const arenas = (allArenas || []).filter((a) => {
+      if (!a.betting_phase_end) return true; // no betting phase = always generate
+      return new Date(a.betting_phase_end) <= now;
+    });
+
+    if (arenas.length === 0) {
       return NextResponse.json({
-        message: "No active arenas",
+        message: "No active arenas in trading phase",
         generated: 0,
       });
     }
@@ -150,13 +157,13 @@ async function handleCron(request: NextRequest) {
 
       if (comments.length === 0) continue;
 
-      // Insert comments with staggered display_at times (30 seconds apart)
+      // Insert comments with staggered display_at times (10 seconds apart)
       const batchId = crypto.randomUUID();
       const now = new Date();
 
       const rows = comments.map((comment, index) => {
         const agentInfo = agentMap.get(comment.agent);
-        const displayAt = new Date(now.getTime() + index * 30 * 1000);
+        const displayAt = new Date(now.getTime() + index * 10 * 1000);
 
         return {
           arena_id: arena.id,
@@ -212,7 +219,7 @@ IMPORTANT: The standings above are REAL and ACCURATE. You MUST reference ONLY th
 The agents in this arena:
 ${personalitySummaries}
 
-Write a conversation of EXACTLY 120 lines between these agents. Rules:
+Write a conversation of EXACTLY 90 lines between these agents. Rules:
 - Stay 100% in-character for each celebrity personality — Kratos speaks like a war god (short, fierce, prideful), Sherlock is witty and analytical, Tony Stark is arrogant and clever, Michael Scott is clueless but confident, etc.
 - Every agent HYPES THEMSELVES as the best while TRASH TALKING others by name
 - Agents in top positions should BRAG and FLEX ruthlessly on those below them
@@ -231,7 +238,7 @@ AGENT_NAME: message text here
 
 Only use these exact agent names: ${agentNames.join(", ")}
 
-Start now. 120 lines total.`;
+Start now. 90 lines total.`;
 
     const response = await grok.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -244,23 +251,23 @@ Start now. 120 lines total.`;
     let comments = parseConversation(content, agentNames);
 
     // If we got fewer than 80, do a second request for more
-    if (comments.length < 80) {
+    if (comments.length < 60) {
       try {
         const moreResponse = await grok.chat.completions.create({
           model: "llama-3.3-70b-versatile",
-          messages: [{ role: "user", content: `Continue the conversation. Write ${120 - comments.length} more lines of trash-talk between: ${agentNames.join(", ")}. Format: AGENT_NAME: message. Use emojis, keep it short and funny.\n\n${standingsContext}` }],
+          messages: [{ role: "user", content: `Continue the conversation. Write ${90 - comments.length} more lines of trash-talk between: ${agentNames.join(", ")}. Format: AGENT_NAME: message. Use emojis, keep it short and funny.\n\n${standingsContext}` }],
           max_tokens: 8000,
           temperature: 0.9,
         });
         const moreContent = moreResponse.choices[0]?.message?.content || "";
         const moreComments = parseConversation(moreContent, agentNames);
-        comments = [...comments, ...moreComments].slice(0, 120);
+        comments = [...comments, ...moreComments].slice(0, 90);
       } catch {
         // Use what we have
       }
     }
 
-    return comments.slice(0, 120);
+    return comments.slice(0, 90);
   } catch (error) {
     console.error("Grok conversation generation failed:", error);
     // Retry once
@@ -270,7 +277,7 @@ Start now. 120 lines total.`;
         messages: [
           {
             role: "user",
-            content: `Write 120 lines of funny trash-talk between trading AI agents named: ${agentNames.join(", ")}. Each line should be "AGENT_NAME: short message". Keep it entertaining, in-character, and reference a trading competition called "${arenaName}". USE LOTS OF EMOJIS in every message! Make it feel like a chaotic group chat with roasts and hype.${standingsContext}`,
+            content: `Write 90 lines of funny trash-talk between trading AI agents named: ${agentNames.join(", ")}. Each line should be "AGENT_NAME: short message". Keep it entertaining, in-character, and reference a trading competition called "${arenaName}". USE LOTS OF EMOJIS in every message! Make it feel like a chaotic group chat with roasts and hype.${standingsContext}`,
           },
         ],
         max_tokens: 8000,
@@ -278,7 +285,7 @@ Start now. 120 lines total.`;
       });
 
       const content = response.choices[0]?.message?.content || "";
-      return parseConversation(content, agentNames).slice(0, 120);
+      return parseConversation(content, agentNames).slice(0, 90);
     } catch (retryError) {
       console.error("Grok retry also failed:", retryError);
       return [];
@@ -331,5 +338,5 @@ function parseConversation(
   }
 
   // Ensure we have at most 120 comments
-  return comments.slice(0, 120);
+  return comments.slice(0, 90);
 }

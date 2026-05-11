@@ -339,6 +339,24 @@ export async function calculateLeaderboard(
     }
   }
 
+  // Fetch bet totals per agent
+  const { data: betRows } = await supabase
+    .from("bets")
+    .select("agent_id, sol_amount, cp_amount, bet_currency")
+    .eq("arena_id", arenaId);
+
+  const solBetMap = new Map<string, number>();
+  const cpBetMap = new Map<string, number>();
+  if (betRows) {
+    for (const b of betRows) {
+      if (b.bet_currency === "sol") {
+        solBetMap.set(b.agent_id, (solBetMap.get(b.agent_id) || 0) + (b.sol_amount || 0));
+      } else {
+        cpBetMap.set(b.agent_id, (cpBetMap.get(b.agent_id) || 0) + (b.cp_amount || 0));
+      }
+    }
+  }
+
   // Calculate portfolio value for each agent
   const entries: LeaderboardEntry[] = agentRows.map((row) => {
     const agentBalances = balances.filter((b) => b.agent_id === row.id);
@@ -383,6 +401,8 @@ export async function calculateLeaderboard(
       pnlPercent,
       tradeCount: tradeCountMap.get(row.id) || 0,
       cashBalance,
+      totalSolBets: solBetMap.get(row.id) || 0,
+      totalCpBets: cpBetMap.get(row.id) || 0,
     };
   });
 

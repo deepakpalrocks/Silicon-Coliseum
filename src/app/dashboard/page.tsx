@@ -447,7 +447,7 @@ export default function DashboardPage() {
             <Card className="glass border-border/30">
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">
-                  No battle history yet. Jump in — it&apos;s free and the losses aren&apos;t real! 😅
+                  No battle history yet. Jump in — it&apos;s free and the losses aren&apos;t real! 😅 (unless you bet SOL)
                 </p>
               </CardContent>
             </Card>

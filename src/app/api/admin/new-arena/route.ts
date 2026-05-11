@@ -249,6 +249,23 @@ export async function POST(request: NextRequest) {
       log.push("WARNING: No celebrity agents found in agents table");
     }
 
+    // Auto-generate initial trash talk comments
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://silicon-coliseum.vercel.app";
+      const commentRes = await fetch(`${siteUrl}/api/cron/generate-comments`, {
+        method: "POST",
+        headers: {
+          "x-cron-secret": process.env.CRON_SECRET || "",
+        },
+      });
+      if (commentRes.ok) {
+        const commentData = await commentRes.json();
+        log.push(`Auto-generated ${commentData.generated || 0} trash talk comments`);
+      }
+    } catch {
+      log.push("WARNING: Failed to auto-generate trash talk (non-fatal)");
+    }
+
     return NextResponse.json({
       success: true,
       message: `New arena "${arenaName}" created!`,

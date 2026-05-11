@@ -243,6 +243,8 @@ export interface LeaderboardEntry {
   pnlPercent: number;
   tradeCount: number;
   cashBalance: number;
+  totalSolBets: number;
+  totalCpBets: number;
 }
 
 // --- AI Decision Types ---

@@ -92,6 +92,8 @@ export async function calculateGlobalLeaderboard(): Promise<LeaderboardEntry[]> 
       pnlPercent: a.avgPnl,
       tradeCount: a.totalTrades,
       cashBalance: 0,
+      totalSolBets: 0,
+      totalCpBets: 0,
     }))
     .sort((a, b) => b.pnlPercent - a.pnlPercent);
 

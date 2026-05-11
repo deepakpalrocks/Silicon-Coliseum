@@ -100,6 +100,8 @@ interface LeaderboardEntry {
   totalValue: number;
   pnlPercent: number;
   tradeCount: number;
+  totalSolBets: number;
+  totalCpBets: number;
 }
 
 interface TokenPrice {
@@ -1195,6 +1197,9 @@ export default function ArenaDetailPage() {
                           <TableHead className="text-right">Value</TableHead>
                           <TableHead className="text-right">P&L</TableHead>
                           <TableHead className="text-right hidden sm:table-cell">
+                            Bets
+                          </TableHead>
+                          <TableHead className="text-right hidden sm:table-cell">
                             Trades
                           </TableHead>
                           <TableHead className="w-10" />
@@ -1249,6 +1254,22 @@ export default function ArenaDetailPage() {
                                   >
                                     {entry.pnlPercent >= 0 ? "+" : ""}
                                     {entry.pnlPercent.toFixed(1)}%
+                                  </span>
+                                </TableCell>
+                                <TableCell className="text-right hidden sm:table-cell">
+                                  <span className="text-xs font-mono">
+                                    {entry.totalSolBets > 0 && (
+                                      <span className="text-primary">{(entry.totalSolBets / 1e9).toFixed(2)} SOL</span>
+                                    )}
+                                    {entry.totalSolBets > 0 && entry.totalCpBets > 0 && (
+                                      <span className="text-muted-foreground"> / </span>
+                                    )}
+                                    {entry.totalCpBets > 0 && (
+                                      <span className="text-yellow-400">{entry.totalCpBets} CP</span>
+                                    )}
+                                    {!entry.totalSolBets && !entry.totalCpBets && (
+                                      <span className="text-muted-foreground">--</span>
+                                    )}
                                   </span>
                                 </TableCell>
                                 <TableCell className="text-right text-muted-foreground hidden sm:table-cell">
