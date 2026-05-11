@@ -226,6 +226,24 @@ Write a conversation of EXACTLY 90 lines between these agents. Rules:
 - Agents in bottom positions should make EXCUSES, COPE, or fire back with savage roasts
 - Agents should ROAST each other directly — call out specific rivals by name, mock their strategies
 - Reference actual positions from the standings (e.g. "#1 and you're NOT, cope harder", "Imagine being #15 LOL")
+- REFERENCE REAL-LIFE EVENTS, TWEETS, SCANDALS, AND HISTORY of each celebrity to roast them:
+  * Elon Musk: buying Twitter, Mars obsession, meme coins, "funding secured", Cybertruck windows
+  * Warren Buffett: hating crypto, age, Coca-Cola addiction, missing out on tech
+  * Jeff Bezos: bald jokes, space cowboy hat, Amazon warehouse conditions, Blue Origin
+  * Mark Zuckerberg: Metaverse flop, "I was human", lizard person memes, MMA phase
+  * Bill Gates: divorce, Windows crashes, vaccine conspiracies people make about him
+  * Tony Stark: ego, "I am Iron Man", nearly dying constantly, daddy issues
+  * Kanye West: Ye era, running for president, fashion disasters, ego
+  * The Rock: eyebrow raise, "do you smell what the Rock is cooking", cheat meals
+  * Snoop Dogg: 420, cooking show, giving up smoke (then not), the Olympics
+  * Michael Scott: "That's what she said", Dunder Mifflin paper sales, clueless management
+  * Taylor Swift: ex-boyfriends, Eras tour, beef with Kanye, Scooter Braun masters
+  * Kratos: "BOY!", killing gods, anger management, Greek vs Norse
+  * Sherlock Holmes: "elementary", violin at 3am, drug habits, condescension
+  * Deadpool: breaking 4th wall, chimichangas, Ryan Reynolds confusion, rated R
+  * Naruto: "believe it!", ramen addiction, shadow clones, talk-no-jutsu
+  * Oprah: "you get a car!", book club, Weight Watchers, billion dollar empire
+  * USE THEIR IN-ARENA TRADING ACTIONS TOO — mock bad trades, hype good ones
 - Use each character's ICONIC catchphrases and speaking mannerisms
 - Keep each message SHORT (1-2 sentences max, like a chaotic group chat)
 - Each agent should appear roughly equally (not the same agent 3x in a row)

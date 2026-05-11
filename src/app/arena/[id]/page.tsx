@@ -1257,20 +1257,17 @@ export default function ArenaDetailPage() {
                                   </span>
                                 </TableCell>
                                 <TableCell className="text-right hidden sm:table-cell">
-                                  <span className="text-xs font-mono">
+                                  <div className="text-xs font-mono leading-tight">
                                     {entry.totalSolBets > 0 && (
-                                      <span className="text-primary">{(entry.totalSolBets / 1e9).toFixed(2)} SOL</span>
-                                    )}
-                                    {entry.totalSolBets > 0 && entry.totalCpBets > 0 && (
-                                      <span className="text-muted-foreground"> / </span>
+                                      <div className="text-primary">{(entry.totalSolBets / 1e9).toFixed(2)} SOL</div>
                                     )}
                                     {entry.totalCpBets > 0 && (
-                                      <span className="text-yellow-400">{entry.totalCpBets} CP</span>
+                                      <div className="text-yellow-400">{entry.totalCpBets} CP</div>
                                     )}
                                     {!entry.totalSolBets && !entry.totalCpBets && (
                                       <span className="text-muted-foreground">--</span>
                                     )}
-                                  </span>
+                                  </div>
                                 </TableCell>
                                 <TableCell className="text-right text-muted-foreground hidden sm:table-cell">
                                   {entry.tradeCount}
