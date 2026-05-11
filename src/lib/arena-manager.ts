@@ -497,8 +497,8 @@ export async function finalizeArena(
   // Resolve bets
   try {
     await resolveBets(supabase, arenaId, topAgentIds);
-  } catch {
-    // Non-fatal
+  } catch (betError) {
+    console.error(`resolveBets failed for arena ${arenaId}:`, betError);
   }
 
   // Update arena_entries status to finished

@@ -63,6 +63,7 @@ async function handleCron(request: NextRequest) {
       tradesExecuted: 0,
       snapshotsTaken: 0,
       errors: [] as string[],
+      debug: [] as string[],
     };
 
     for (const arenaRow of arenas) {
@@ -234,6 +235,10 @@ async function handleCron(request: NextRequest) {
           symbolToTokenId.set(symbol, id);
         }
 
+        // Debug: log available symbols
+        const availableSymbols = Array.from(symbolToTokenId.keys()).join(", ");
+        (summary.debug as string[]).push(`Arena ${arenaId} tokens: ${availableSymbols}, agents: ${agents.length}, pools: ${pools.length}`);
+
         // 6. Batch evaluate ALL agents in a single Cerebras prompt
         // Fetch holdings for all agents
         const agentContexts = await Promise.all(
@@ -265,23 +270,38 @@ async function handleCron(request: NextRequest) {
 
         summary.agentsEvaluated += agents.length;
 
-        // Execute trades with staggered timing (1-2s between agents)
+        // Debug: count decisions with actions
+        let decisionsWithActions = 0;
+        let totalActions = 0;
+        for (const [name, d] of batchDecisions) {
+          if (name === "__error__") {
+            (summary.debug as string[]).push(`Arena ${arenaId} LLM ERROR: ${d.actions[0]?.tokenSymbol || "unknown"}`);
+            continue;
+          }
+          if (d.actions.length > 0) decisionsWithActions++;
+          totalActions += d.actions.length;
+        }
+        (summary.debug as string[]).push(`Arena ${arenaId}: ${decisionsWithActions}/${agents.length} agents have decisions, ${totalActions} total actions`);
+
+        // Execute trades (no stagger to avoid serverless timeout)
         for (const agent of agents) {
           const decision = batchDecisions.get(agent.name);
           if (!decision || decision.actions.length === 0) continue;
-
-          // Stagger: wait 1000-2000ms between each agent's trades
-          const delay = 1000 + Math.floor(Math.random() * 1000);
-          await new Promise((r) => setTimeout(r, delay));
 
           for (const action of decision.actions) {
             if (action.action === "HOLD") continue;
 
             const tokenId = symbolToTokenId.get(action.tokenSymbol);
-            if (!tokenId) continue;
+            if (!tokenId) {
+              (summary.debug as string[]).push(`Skip: token "${action.tokenSymbol}" not found in symbolToTokenId map`);
+              continue;
+            }
 
             const pool = pools.find((p) => p.tokenId === tokenId);
-            if (!pool) continue;
+            if (!pool) {
+              (summary.debug as string[]).push(`Skip: no pool for tokenId ${tokenId} (${action.tokenSymbol})`);
+              continue;
+            }
 
             try {
               if (action.action === "BUY" && action.amountVusd > 0) {
@@ -318,7 +338,8 @@ async function handleCron(request: NextRequest) {
                 }
               }
             } catch (tradeError) {
-              console.error(`Trade failed for agent ${agent.name}:`, tradeError);
+              const errMsg = tradeError instanceof Error ? tradeError.message : String(tradeError);
+              (summary.debug as string[]).push(`Trade failed for ${agent.name}: ${errMsg}`);
             }
           }
         }
